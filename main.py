@@ -1,34 +1,46 @@
 import json
-import output_helper
+import helper
 
+# Liest die gesamte JSON-Datei.
+# Inhalt ist so formatiert, dass "rooms" als Dictionary angelegt wird.
 with open('files/rooms.json') as json_file:
     rooms = json.load(json_file)
+
+monster = helper.addMonster(rooms)
 
 currentRoom = 'Hall'
 inventory = []
 
-output_helper.showInstructions()
+helper.showInstructions()
 
-end = False
-while not end:
+isEnd = False
+while not isEnd:
+    # Leerzeile, damit mehr Platz zwischen Ein- und Ausgabefenster ist.
     print()
     command = input('> ').lower().split()
+    if len(command) == 0:
+        print('Leere Eingabe!')
+        continue
+
     if command[0] == 'help':
-        output_helper.showCommands()
+        helper.showCommands()
+    elif command[0] == 'fight':
+        isEnd = helper.handleFight(rooms, currentRoom, inventory, monster)
     elif command[0] == 'get':
-        end = output_helper.handleItemPickup(rooms, currentRoom, inventory)
+        isEnd = helper.handleItemPickup(rooms, currentRoom, inventory, monster)
     elif command[0] == 'go':
         try:
-            currentRoom = output_helper.showNewRoom(rooms, currentRoom, command[1])
+            currentRoom = helper.showNewRoom(rooms, currentRoom, command[1], monster)
         except IndexError:
-            output_helper.showInvalidCommand()
+            helper.showInvalidCommand()
             continue
-        end = output_helper.showWinningScreenIfTrue(currentRoom, inventory)
     elif command[0] == 'map':
-        output_helper.showDirections(rooms, currentRoom)
+        helper.showDirections(rooms, currentRoom)
     elif command[0] == 'status':
-        output_helper.showStatus(rooms, currentRoom, inventory)
+        helper.showStatus(rooms, currentRoom, inventory, monster)
     elif command[0] == 'exit':
-        end = True
+        isEnd = True
     else:
-        output_helper.showInvalidCommand()
+        helper.showInvalidCommand()
+    if not isEnd:
+        isEnd = helper.showWinningScreenIfTrue(currentRoom, inventory)
