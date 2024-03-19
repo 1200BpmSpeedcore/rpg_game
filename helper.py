@@ -86,7 +86,7 @@ def handleItemPickup(rooms, currentRoom, inventory, monsterName):
     isDead = False
     if item == '':
         print('There is no item in this room')
-
+        return isDead
     if item == '' and 'monster' in rooms[currentRoom]:
         print('The', monsterName, 'has awaken attacking you.')
 
